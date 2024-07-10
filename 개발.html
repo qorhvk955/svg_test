@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+        body {
+            font-family: sans-serif;
+        }
+
+        section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            overflow: hidden;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background-color: black;
+            margin-left: 2px;
+            animation: blink 0.7s steps(1) infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <div class="container">
+            <h1 id="split"></h1>
+            <div class="cursor"></div>
+        </div>
+    </section>
+
+    <!-- GSAP 및 ScrollTrigger 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/ScrollTrigger.min.js"></script>
+
+    <script>
+        // ScrollTrigger 플러그인을 GSAP에 등록
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 초기 텍스트
+        const text = "SOMETEXT";
+        const splitText = document.getElementById('split');
+
+        // 문자를 개별 div로 래핑
+        splitText.innerHTML = text.split('').map(char => `<div class="char" style="position: relative; display: inline-block; opacity: 0;">${char}</div>`).join('');
+
+        // 각 문자를 선택
+        const chars = document.querySelectorAll('.char');
+        const cursor = document.querySelector('.cursor');
+
+        // GSAP 애니메이션 적용
+        gsap.to(chars, {
+            opacity: 1,
+            stagger: {
+                amount: 1.5,
+                onStart: function () {
+                    cursor.style.left = `${this.targets()[0].offsetLeft + this.targets()[0].offsetWidth}px`;
+                }
+            },
+            ease: "none",
+            duration: 0.1,
+            scrollTrigger: {
+                trigger: ".container",
+                start: "top 70%",
+                markers: true
+            },
+            onComplete: () => {
+                // 애니메이션이 끝나면 커서를 제거
+                cursor.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
